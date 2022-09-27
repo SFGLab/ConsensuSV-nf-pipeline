@@ -137,6 +137,8 @@ source /tools/root/bin/thisroot.sh
 ENV ROOTSYS=/tools/root
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib
 
+RUN apt-get install -y libgd-graph-perl
+
 RUN ((echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan) && \
 cpan GD && \
 cpan GD::Graph && \
@@ -265,37 +267,24 @@ git clone https://github.com/czc/nb_distribution.git
 # ConsensuSV
 
 RUN cd /tools && \
-    wget https://github.com/SFGLab/ConsensuSV-core/archive/refs/tags/1.7.zip && \
-    unzip 1.7.zip && \
-    rm 1.7.zip && \
-    mv ConsensuSV-core-1.7 ConsensuSV-core && \
+    wget https://github.com/SFGLab/ConsensuSV-core/archive/refs/tags/1.9.1.zip && \
+    unzip 1.9.1.zip && \
+    rm 1.9.1.zip && \
+    mv ConsensuSV-core-1.9.1 ConsensuSV-core && \
     cd ConsensuSV-core && \
     unzip ALL_Illumina_Integrate_20170206.zip
 
 ENV PATH=$PATH:/tools/lumpy-sv/bin:/tools/manta-1.6.0.centos6_x86_64/bin:/tools/tardis:/tools/wham/bin:/tools/breakdancer-master/bin:/tools/breakdancer-master/perl:/tools/nb_distribution/:/tools/CNVnator-master:/tools:/tools/ConsensuSV
 
-RUN pip install pysam wget luigi
+RUN pip install pysam wget
 
-RUN mkdir /etc/luigi/ && \ 
-touch luigi.cfg && \
-printf "[core]\n\
-log_level=ERROR\n\
-rpc_connect_timeout=60\n\
-rpc_retry_wait=120\n\
-rpc_retry_attempts=100\n\
-[resources]\n\
-io=16\n\
-cores=128\n\
-[worker]\n\
-keep_alive=true\n\
-[scheduler]\n\
-worker_disconnect_delay=7200" > /etc/luigi/luigi.cfg
+RUN wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram
 
-WORKDIR /workspace
+RUN wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai
 
-RUN cd /workspace/ && \
-git clone https://github.com/SFGLab/ConsensuSV-pipeline.git .
+RUN curl -s https://get.nextflow.io | bash && \
+mv nextflow /tools/
 
-EXPOSE 8082
+ENV PATH=$PATH:/tools/
 
-ENTRYPOINT luigid --background & /bin/bash
+RUN chmod +x /tools/CNVnator-master/cnvnator2VCF.pl

@@ -34,6 +34,10 @@ sed -E 's/[0-9,X,Y].*/chr&/' breakseq2_bplib_20150129.ins > breakseq2_bplib_2015
 sed -E 's/[0-9,X,Y].*/chr&/' breakseq2_bplib_20150129.fna > breakseq2_bplib_20150129_chr.fna && \
 rm breakseq2_bplib_20150129.*
 
+RUN wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram && \
+wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai
+
+
 # updates / packages
 ENV LANGUAGE=en_US.UTF-8
 ENV LANG=en_US.UTF-8
@@ -192,6 +196,8 @@ cd CNVnator-master/ && \
 ln -s /tools/samtools-1.12 samtools && \
 make 
 
+RUN chmod +x /tools/CNVnator-master/cnvnator2VCF.pl
+
 # breakdancer
 
 RUN cd /tools && \
@@ -229,6 +235,34 @@ RUN cd /tools/ && \
 wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2 && \
 tar xjf manta-1.6.0.centos6_x86_64.tar.bz2 && \
 rm manta-1.6.0.centos6_x86_64.tar.bz2
+
+RUN echo -e "chr1\t0\t248956422 \
+chr2\t0\t242193529 \
+chr3\t0\t198295559 \
+chr4\t0\t190214555 \
+chr5\t0\t181538259 \
+chr6\t0\t170805979 \
+chr7\t0\t159345973 \
+chr8\t0\t145138636 \
+chr9\t0\t138394717 \
+chr10\t0\t133797422 \
+chr11\t0\t135086622 \
+chr12\t0\t133275309 \
+chr13\t0\t114364328 \
+chr14\t0\t107043718 \
+chr15\t0\t101991189 \
+chr16\t0\t90338345 \
+chr17\t0\t83257441 \
+chr18\t0\t80373285 \
+chr19\t0\t58617616 \
+chr20\t0\t64444167 \
+chr21\t0\t46709983 \
+chr22\t0\t50818468 \
+chrX\t0\t156040895 \
+chrY\t0\t57227415 \
+chrM\t0\t16569" > /tools/grch38.bed && \
+bgzip /tools/grch38.bed && \
+tabix /tools/grch38.bed.gz
 
 # tardis
 
@@ -274,45 +308,10 @@ RUN cd /tools && \
     cd ConsensuSV-core && \
     unzip ALL_Illumina_Integrate_20170206.zip
 
-ENV PATH=$PATH:/tools/lumpy-sv/bin:/tools/manta-1.6.0.centos6_x86_64/bin:/tools/tardis:/tools/wham/bin:/tools/breakdancer-master/bin:/tools/breakdancer-master/perl:/tools/nb_distribution/:/tools/CNVnator-master:/tools:/tools/ConsensuSV
+ENV PATH=$PATH:/tools/lumpy-sv/bin:/tools/manta-1.6.0.centos6_x86_64/bin:/tools/tardis:/tools/wham/bin:/tools/breakdancer-master/bin:/tools/breakdancer-master/perl:/tools/nb_distribution/:/tools/CNVnator-master:/tools:/tools/ConsensuSV:$PATH:/tools/
 
-RUN pip install pysam wget
+RUN pip install pysam
 
-RUN wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram
+# RUN curl -s https://get.nextflow.io | bash && \
+# mv nextflow /tools/
 
-RUN wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai
-
-RUN curl -s https://get.nextflow.io | bash && \
-mv nextflow /tools/
-
-ENV PATH=$PATH:/tools/
-
-RUN chmod +x /tools/CNVnator-master/cnvnator2VCF.pl
-
-RUN echo -e "chr1\t0\t248956422
-chr2\t0\t242193529
-chr3\t0\t198295559
-chr4\t0\t190214555
-chr5\t0\t181538259
-chr6\t0\t170805979
-chr7\t0\t159345973
-chr8\t0\t145138636
-chr9\t0\t138394717
-chr10\t0\t133797422
-chr11\t0\t135086622
-chr12\t0\t133275309
-chr13\t0\t114364328
-chr14\t0\t107043718
-chr15\t0\t101991189
-chr16\t0\t90338345
-chr17\t0\t83257441
-chr18\t0\t80373285
-chr19\t0\t58617616
-chr20\t0\t64444167
-chr21\t0\t46709983
-chr22\t0\t50818468
-chrX\t0\t156040895
-chrY\t0\t57227415
-chrM\t0\t16569" > /tools/grch38.bed && \
-bgzip /tools/grch38.bed && \
-tabix /tools/grch38.bed.gz

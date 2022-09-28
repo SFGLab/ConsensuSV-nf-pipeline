@@ -288,3 +288,31 @@ mv nextflow /tools/
 ENV PATH=$PATH:/tools/
 
 RUN chmod +x /tools/CNVnator-master/cnvnator2VCF.pl
+
+RUN echo -e "chr1\t0\t248956422
+chr2\t0\t242193529
+chr3\t0\t198295559
+chr4\t0\t190214555
+chr5\t0\t181538259
+chr6\t0\t170805979
+chr7\t0\t159345973
+chr8\t0\t145138636
+chr9\t0\t138394717
+chr10\t0\t133797422
+chr11\t0\t135086622
+chr12\t0\t133275309
+chr13\t0\t114364328
+chr14\t0\t107043718
+chr15\t0\t101991189
+chr16\t0\t90338345
+chr17\t0\t83257441
+chr18\t0\t80373285
+chr19\t0\t58617616
+chr20\t0\t64444167
+chr21\t0\t46709983
+chr22\t0\t50818468
+chrX\t0\t156040895
+chrY\t0\t57227415
+chrM\t0\t16569" > /tools/grch38.bed && \
+bgzip /tools/grch38.bed && \
+tabix /tools/grch38.bed.gz

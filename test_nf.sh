@@ -1,0 +1,1 @@
+nextflow main.nf -with-conda

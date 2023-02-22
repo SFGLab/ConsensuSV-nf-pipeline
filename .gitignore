@@ -1,3 +1,7 @@
 *.bam
 *.sam
 *.fastq
+work/
+.nextflow*
+.devcontainer
+__pycache__

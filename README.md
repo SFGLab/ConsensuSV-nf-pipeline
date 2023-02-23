@@ -102,7 +102,7 @@ The location of the output depends on your working directory, provided as the pa
 The overall schema of the pipeline is shown on the following picture:
 
 <p align="center">
-<img src="https://github.com/SFGLab/consensusv-nf-pipeline/blob/main/pipeline.png" />
+<img src="https://github.com/SFGLab/ConsensuSV-nf-pipeline/blob/main/pipeline.png" />
 </p>
 
 If the input is cram file, it is unpacked to bam file. Then, the bam files are indexed, and multiple tools are run in parallel to obtain the Structural Variants, Indels and SNPs. We are using bcftools for the Indels and SNPs callings. The SV-callers used in this pipeline are: Delly, BreakDancer, Tardis, CNVNator, BreakSeq, Manta, Lumpy, and Whamg.
@@ -156,15 +156,15 @@ After that, you can start using the software, e.g. run:
 We have used 9 samples for the benchmark provided by NYGC - HG00512, HG00513, HG00514, HG00731, HG00732, HG00733, NA19238, NA19239, NA19240. The comparisons were done using svbench (https://github.com/kcleal/svbench) and Venn diagrams of the common SVs. The results from svbench can be seen below:
 
 <p align="center">
-<img src="https://github.com/SFGLab/consensusv-nf-pipeline/blob/main/benchmark.png" />
+<img src="https://github.com/SFGLab/ConsensuSV-nf-pipeline/blob/main/benchmark.png" />
 </p>
 
 And the Venn diagrams can be seen there:
 
 <p align="center">
-<img src="https://github.com/SFGLab/consensusv-nf-pipeline/blob/main/average.png" />
+<img src="https://github.com/SFGLab/ConsensuSV-nf-pipeline/blob/main/average.png" />
 </p>
 
 <p align="center">
-<img src="https://github.com/SFGLab/consensusv-nf-pipeline/blob/main/venns.png" />
+<img src="https://github.com/SFGLab/ConsensuSV-nf-pipeline/blob/main/venns.png" />
 </p>

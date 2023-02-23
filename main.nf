@@ -4,7 +4,7 @@
  * The following pipeline parameters specify the refence genomes
  * and read pairs and can be provided as command line options
  */
-params.cram = "/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram"
+ 
 params.ref = "/tools/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 params.outdir = "results"
 params.design = "/workspaces/ConsensuSV-nextflow-MEI/design.csv"
@@ -43,7 +43,13 @@ process UNCRAM {
  
     script:
     """
-    samtools view -b  -T ${params.ref} -o output.bam $cram
+    if [[ $cram == *.cram ]]; then
+        samtools view -b  -T ${params.ref} -o output.bam $cram
+    elif [[ $cram == *.bam ]]; then
+        cp $cram output.bam
+    else
+        exit 5
+    fi
     """
 }
  

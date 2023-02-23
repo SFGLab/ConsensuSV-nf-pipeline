@@ -1,1 +1,0 @@
-python run_consensusv.py Benchmark1000G --working-dir /1000g_train_working_dir/ --workers 4 --log-level INFO

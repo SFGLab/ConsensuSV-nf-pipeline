@@ -57,12 +57,12 @@ Since the algorithm is easy-to-run, the preparation of the sample is minimal. Th
 
 An example csv file (provided with the software as well):
 
-Path
--------------- | --------------- | ---------------
-/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram
-/HG00513.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram
-/HG00514.bam
-/HG00731.bam
+Path |
+-------------- |
+/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram |
+/HG00513.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram |
+/HG00514.bam |
+/HG00731.bam |
 
 Bear in mind that the column headers are provided only for the ease of the example, and should not be present in the csv file.
 

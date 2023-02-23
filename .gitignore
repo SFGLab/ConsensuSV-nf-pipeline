@@ -2,6 +2,7 @@
 *.sam
 *.fastq
 work/
+results/
 .nextflow*
 .devcontainer
 __pycache__

@@ -304,6 +304,7 @@ process ConsensuSV {
     mkdir -p consensus_working_results
     mkdir -p consensus_working_results/$sample
     cp $vcf_DELLY $vcf_BreakDancer $vcf_TARDIS $vcf_CNVNator $vcf_Manta $vcf_Lumpy $vcf_Whamg consensus_working_results/$sample
-    python -u /tools/ConsensuSV-core/main.py -of \$PWD -f \$PWD/consensus_working_results/ -s $sample -c breakdancer,breakseq,cnvnator,delly,lumpy,manta,tardis,whamg -mod /tools/ConsensuSV-core/pretrained_1000g_illumina.model
+    python -u /tools/ConsensuSV-core/main.py -of \$PWD/ -f \$PWD/consensus_working_results/ -s $sample -c breakdancer,breakseq,cnvnator,delly,lumpy,manta,tardis,whamg -mod /tools/ConsensuSV-core/pretrained_1000g_illumina.model
+    mv consensuSV__${sample}.vcf ${sample}.vcf
     """
 }

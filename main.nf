@@ -4,12 +4,13 @@
  * The following pipeline parameters specify the refence genomes
  * and read pairs and can be provided as command line options
  */
- 
+
 params.ref = "/tools/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 params.outdir = "results"
-params.design = "/workspaces/ConsensuSV-nextflow-MEI/design.csv"
+params.design = "/workspaces/ConsensuSV-nextflow-MEI/design_highres.csv"
 params.threads = 4
 params.mem = 4
+
 workflow {
     files = Channel.fromPath(params.design).splitCsv()
     UNCRAM(files)
@@ -22,7 +23,6 @@ workflow {
     Manta(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
     Lumpy(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
     Whamg(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
-    //FAKE(UNCRAM.out.sample, DELLY.out, BreakDancer.out, TARDIS.out, CNVNator.out, Manta.out, Lumpy.out, Whamg.out)
     ConsensuSV(UNCRAM.out.sample, DELLY.out, BreakDancer.out, TARDIS.out, CNVNator.out, Manta.out, Lumpy.out, Whamg.out)
 }
 all_chromosomes = "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
@@ -46,7 +46,7 @@ process UNCRAM {
     if [[ $cram == *.cram ]]; then
         samtools view -b  -T ${params.ref} -o output.bam $cram
     elif [[ $cram == *.bam ]]; then
-        cp $cram output.bam
+        ln -s $cram output.bam
     else
         exit 5
     fi
@@ -114,7 +114,7 @@ process BreakDancer {
 process TARDIS {
     tag "Calling Tardis"
 
-    time { 1.minute }
+    time { 3.hour } // change to 3h in production
     errorStrategy "retry"
     maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  

@@ -1,4 +1,4 @@
-# consensusv-nf-pipeline
+# ConsensuSV - Nextflow Pipeline [WORK IN PROGRESS]
 
 Table of Contents
 =================

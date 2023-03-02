@@ -23,7 +23,7 @@ workflow {
     Manta(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
     Lumpy(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
     Whamg(UNCRAM.out.bam, UNCRAM.out.sample, INDEX.out)
-    ConsensuSV(UNCRAM.out.sample, DELLY.out, BreakDancer.out, TARDIS.out, CNVNator.out, Manta.out, Lumpy.out, Whamg.out)
+    ConsensuSV(UNCRAM.out.sample, DELLY.out, BreakSeq.out, BreakDancer.out, TARDIS.out, CNVNator.out, Manta.out, Lumpy.out, Whamg.out)
 }
 all_chromosomes = "chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM"
 all_chromosomes_space = "chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY chrM"
@@ -71,6 +71,9 @@ process INDEX {
 
 process DELLY {
     tag "Calling DELLY"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -84,7 +87,12 @@ process DELLY {
 
     script:
     """
-    delly_v1.1.6_linux_x86_64bit call -o delly.vcf -g ${params.ref} $bam
+    if [ ${task.attempt} -lt 2 ] 
+    then
+        delly_v1.1.6_linux_x86_64bit call -o delly.vcf -g ${params.ref} $bam
+    else
+        cat /tools/ConsensuSV-core/header > delly.vcf
+    fi
     """
 }
 
@@ -92,6 +100,9 @@ process BreakDancer {
     conda '/tools/anaconda/envs/breakseq'
 
     tag "Calling BreakDancer"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -105,9 +116,14 @@ process BreakDancer {
 
     script:
     """
-    bam2cfg.pl $bam > config
-    breakdancer-max config > inter_file
-    python /tools/breakdancer-master/bin/breakdancer2vcf.py < inter_file > breakdancer.vcf
+    if [ ${task.attempt} -lt 2 ] 
+    then
+        bam2cfg.pl $bam > config
+        breakdancer-max config > inter_file
+        python /tools/breakdancer-master/bin/breakdancer2vcf.py < inter_file > breakdancer.vcf
+    else
+        cat /tools/ConsensuSV-core/header > breakdancer.vcf
+    fi
     """
 }
 
@@ -142,8 +158,14 @@ process TARDIS {
 
 process CNVNator {
     tag "Calling CNVNator"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
 
     input:
     path bam
@@ -155,12 +177,17 @@ process CNVNator {
 
     script:
     """
-    cnvnator -root cnv.root -tree $bam -chrom $all_chromosomes_num X Y
-    cnvnator -root cnv.root -his 1000 -fasta ${params.ref}
-    cnvnator -root cnv.root -stat 1000
-    cnvnator -root cnv.root -partition 1000
-    cnvnator -root cnv.root -call 1000 > cnv.out
-    cnvnator2VCF.pl -prefix $sample -reference GRCh38 cnv.out . > cnvnator.vcf
+    if [ ${task.attempt} -lt 2 ] 
+    then
+        cnvnator -root cnv.root -tree $bam -chrom $all_chromosomes_num X Y
+        cnvnator -root cnv.root -his 1000 -fasta ${params.ref}
+        cnvnator -root cnv.root -stat 1000
+        cnvnator -root cnv.root -partition 1000
+        cnvnator -root cnv.root -call 1000 > cnv.out
+        cnvnator2VCF.pl -prefix $sample -reference GRCh38 cnv.out . > cnvnator.vcf
+    else
+        cat /tools/ConsensuSV-core/header > cnvnator.vcf
+    fi
     """
 }
 
@@ -168,6 +195,9 @@ process BreakSeq {
     conda '/tools/anaconda/envs/breakseq'
 
     tag "Calling BreakSeq"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -181,19 +211,24 @@ process BreakSeq {
 
     script:
     """
-    run_breakseq2.py --reference ${params.ref} --bams $bam --work breakseq/ --bwa /tools/bwa-0.7.17/bwa --samtools /tools/samtools-0.1.19/samtools --bplib_gff /tools/breakseq2_bplib_20150129_chr.gff --nthreads ${params.threads} --sample $sample --chromosomes $all_chromosomes_space
-    gunzip breakseq/breakseq.vcf.gz
-    mv breakseq/breakseq.vcf .
+    if [ ${task.attempt} -lt 2 ] 
+    then
+        run_breakseq2.py --reference ${params.ref} --bams $bam --work breakseq/ --bwa /tools/bwa-0.7.17/bwa --samtools /tools/samtools-0.1.19/samtools --bplib_gff /tools/breakseq2_bplib_20150129_chr.gff --nthreads ${params.threads} --sample $sample --chromosomes $all_chromosomes_space
+        gunzip breakseq/breakseq.vcf.gz
+        mv breakseq/breakseq.vcf .
+    else
+        cat /tools/ConsensuSV-core/header > breakseq.vcf
+    fi
     """
 }
 
 process Manta {
     conda '/tools/anaconda/envs/breakseq'
     
+    tag "Calling Manta"
+
     errorStrategy "retry"
     maxRetries 2 // total of 3
-
-    tag "Calling Manta"
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -223,6 +258,9 @@ process Lumpy {
     conda '/tools/anaconda/envs/breakseq'
 
     tag "Calling Lumpy"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -236,17 +274,25 @@ process Lumpy {
 
     script:
     """
-    samtools view -b -F 1294 -@ ${params.threads} $bam > lumpy.discordants.unsorted.bam
-    samtools sort -o lumpy.discordants.bam -@ ${params.threads} -m ${params.mem}G lumpy.discordants.unsorted.bam
-    samtools view -h $bam | /tools/lumpy-sv/scripts/extractSplitReads_BwaMem -i stdin | samtools view -Sb - > lumpy.splitters.unsorted.bam
-    samtools sort -o lumpy.splitters.bam -@ ${params.threads} -m ${params.mem}G lumpy.splitters.unsorted.bam
-    lumpyexpress -B $bam -S lumpy.splitters.bam -D lumpy.discordants.bam -R ${params.ref} -T lumpy -o lumpy.vcf
+    if [ ${task.attempt} -lt 3 ] 
+    then
+        samtools view -b -F 1294 -@ ${params.threads} $bam > lumpy.discordants.unsorted.bam
+        samtools sort -o lumpy.discordants.bam -@ ${params.threads} -m ${params.mem}G lumpy.discordants.unsorted.bam
+        samtools view -h $bam | /tools/lumpy-sv/scripts/extractSplitReads_BwaMem -i stdin | samtools view -Sb - > lumpy.splitters.unsorted.bam
+        samtools sort -o lumpy.splitters.bam -@ ${params.threads} -m ${params.mem}G lumpy.splitters.unsorted.bam
+        lumpyexpress -B $bam -S lumpy.splitters.bam -D lumpy.discordants.bam -R ${params.ref} -T lumpy -o lumpy.vcf
+    else
+        cat /tools/ConsensuSV-core/header > lumpy.vcf
+    fi
     """
 }
 
 process Whamg {
 
     tag "Calling Whamg"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -260,7 +306,12 @@ process Whamg {
 
     script:
     """
-    whamg -c $all_chromosomes -a ${params.ref} -f $bam | perl /tools/wham/utils/filtWhamG.pl > whamg.vcf  2> wham.err
+    if [ ${task.attempt} -lt 3 ] 
+    then
+        whamg -c $all_chromosomes -a ${params.ref} -f $bam | perl /tools/wham/utils/filtWhamG.pl > whamg.vcf  2> wham.err
+    else
+        cat /tools/ConsensuSV-core/header > whamg.vcf
+    fi
     """
 }
 
@@ -268,6 +319,9 @@ process SVelter {
     conda '/tools/anaconda/envs/breakseq'
 
     tag "Calling SVelter"
+
+    errorStrategy "retry"
+    maxRetries 1 // total of 2 - if tardis is longer than 1h, then it has this weird thing that calculates very long
  
     publishDir "${params.outdir}/vcfs/${sample}"
 
@@ -281,8 +335,13 @@ process SVelter {
 
     script:
     """
-    svelter.py Setup --reference ${params.ref} --workdir SVelter --support /tools/svelter/Support/GRCh38/
-    svelter.py --sample $bam --workdir SVelter --chromosome $all_chromosomes
+    if [ ${task.attempt} -lt 3 ] 
+    then
+        svelter.py Setup --reference ${params.ref} --workdir SVelter --support /tools/svelter/Support/GRCh38/
+        svelter.py --sample $bam --workdir SVelter --chromosome $all_chromosomes
+    else
+        cat /tools/ConsensuSV-core/header > svelter.vcf
+    fi
     """
 }
 

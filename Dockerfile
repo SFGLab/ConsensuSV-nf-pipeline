@@ -18,14 +18,6 @@ RUN cd /tools && \
 wget ftp://ftp.ebi.ac.uk/1000g/ftp/technical/reference/GRCh38_reference_genome/other_mapping_resources/ALL_20141222.dbSNP142_human_GRCh38.snps.vcf.gz && \
 tabix ALL_20141222.dbSNP142_human_GRCh38.snps.vcf.gz && \
 wget ftp://ftp.ebi.ac.uk/1000g/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.* && \
-wget ftp://ftp.ebi.ac.uk/1000g/ftp/phase3/data/HG00331/sequence_read/ERR018471_1.filt.fastq.gz && \
-gunzip ERR018471_1.filt.fastq.gz && \
-wget ftp://ftp.ebi.ac.uk/1000g/ftp/phase3/data/HG00331/sequence_read/ERR018471_2.filt.fastq.gz && \
-gunzip ERR018471_2.filt.fastq.gz && \
-wget ftp://ftp.ebi.ac.uk/1000g/ftp/phase3/data/HG00331/sequence_read/ERR031898_1.filt.fastq.gz && \
-gunzip ERR031898_1.filt.fastq.gz && \
-wget ftp://ftp.ebi.ac.uk/1000g/ftp/phase3/data/HG00331/sequence_read/ERR031898_2.filt.fastq.gz && \
-gunzip ERR031898_2.filt.fastq.gz && \
 wget https://github.com/BilkentCompGen/sonic-prebuilt/raw/master/GRCh38_1kg.sonic && \
 wget http://sv.gersteinlab.org/phase1bkpts/breakseq2_bplib_20150129.zip && \
 unzip breakseq2_bplib_20150129.zip && \
@@ -33,16 +25,6 @@ cat breakseq2_bplib_20150129.gff | awk -v OFS='\t' '$1="chr"$1' > breakseq2_bpli
 sed -E 's/[0-9,X,Y].*/chr&/' breakseq2_bplib_20150129.ins > breakseq2_bplib_20150129_chr.ins && \
 sed -E 's/[0-9,X,Y].*/chr&/' breakseq2_bplib_20150129.fna > breakseq2_bplib_20150129_chr.fna && \
 rm breakseq2_bplib_20150129.*
-
-RUN cd / && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00512/sv_7kb_mate/HG00512.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00513/sv_7kb_mate/HG00513.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00513/sv_7kb_mate/HG00513.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00514/sv_7kb_mate/HG00514.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/CHS/HG00514/sv_7kb_mate/HG00514.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram.crai && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/PUR/HG00731/sv_7kb_mate/HG00731.alt_bwamem_GRCh38DH.20150724.PUR.sv_7kb_mate.cram && \
-wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/hgsv_sv_discovery/data/PUR/HG00731/sv_7kb_mate/HG00731.alt_bwamem_GRCh38DH.20150724.PUR.sv_7kb_mate.cram.crai
 
 # updates / packages
 ENV LANGUAGE=en_US.UTF-8
@@ -323,3 +305,8 @@ RUN pip install pysam
 
 RUN curl -s https://get.nextflow.io | bash && \
 mv nextflow /tools/
+
+WORKDIR /workspace
+
+RUN cd /workspace/ && \
+git clone https://github.com/SFGLab/ConsensuSV-nf-pipeline.git .

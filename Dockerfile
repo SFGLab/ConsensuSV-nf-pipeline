@@ -161,9 +161,6 @@ rm vcftools_0.1.13.tar.gz
 
 ENV PATH=${PATH}:/tools/samtools-1.12:/tools/bcftools-1.12:/tools/bwa-0.7.17:/tools/anaconda/bin:/tools/biobambam2/2.0.87-release-20180301132713/x86_64-etch-linux-gnu/bin:/tools/gatk-4.2.0.0:/tools/FastQC:/tools/vcftools_0.1.13/cpp:/tools/bedtools2/bin
 
-RUN samtools view -b  -T /tools/GRCh38_full_analysis_set_plus_decoy_hla.fa -o /HG00514.bam /HG00514.alt_bwamem_GRCh38DH.20150724.CHS.sv_7kb_mate.cram && \
-samtools view -b  -T /tools/GRCh38_full_analysis_set_plus_decoy_hla.fa -o /HG00731.bam /HG00731.alt_bwamem_GRCh38DH.20150724.PUR.sv_7kb_mate.cram
-
 RUN conda init bash
 
 # bedtools2

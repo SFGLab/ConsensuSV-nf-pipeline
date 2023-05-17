@@ -12,6 +12,7 @@ Table of Contents
 * [Pipeline control webservice](#pipeline-control-webservice)
 * [Pipeline details](#pipeline-details)
 * [Setup on NVIDIA DGX A100 systems](#setup-on-nvidia-dgx-a100-systems)
+* [Setup using singularity](#setup-using-singularity)
 * [Benchmark](#benchmark)
 ## What is ConsensuSV?
 

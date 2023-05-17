@@ -151,6 +151,22 @@ After that, you can start using the software, e.g. run:
 ./test_run_csv.sh
 ```
 
+## Setup using singularity
+
+To prepare singularity image use the following command:
+
+```bash
+singularity pull docker://mateuszchilinski/consensusv-nf-pipeline:latest
+```
+
+Then to run the container:
+
+```bash
+singularity run --pwd /workspace/ --writable-tmpfs consensusv-nf-pipeline_latest.sif
+```
+
+Then you can simply start using the software as described in [Running the pipeline](#running-the-pipeline).
+
 ## Benchmark
 
 We have used 9 samples for the benchmark provided by NYGC - HG00512, HG00513, HG00514, HG00731, HG00732, HG00733, NA19238, NA19239, NA19240. The comparisons were done using svbench (https://github.com/kcleal/svbench) and Venn diagrams of the common SVs. The results from svbench can be seen below:

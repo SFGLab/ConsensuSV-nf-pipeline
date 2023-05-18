@@ -89,7 +89,7 @@ process DELLY {
     """
     if [ ${task.attempt} -lt 2 ] 
     then
-        delly_v1.1.6_linux_x86_64bit call -o delly.vcf -g ${params.ref} $bam
+        delly_v1.1.6_linux_x86_64bit call -g ${params.ref} $bam > delly.vcf
     else
         cat /tools/ConsensuSV-core/header > delly.vcf
     fi
@@ -148,7 +148,7 @@ process TARDIS {
     """
     if [ ${task.attempt} -lt 2 ] 
     then
-        tardis -i ${bam} --ref ${params.ref} --sonic /tools/GRCh38_1kg.sonic --out tardis.vcf --first-chr 0 --last-chr 24
+        tardis -i ${bam} --ref ${params.ref} --sonic /tools/GRCh38_1kg.sonic --out tardis --first-chr 0 --last-chr 24
     else
         cat /tools/ConsensuSV-core/header > tardis.vcf
     fi

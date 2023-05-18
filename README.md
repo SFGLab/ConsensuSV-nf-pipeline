@@ -12,6 +12,7 @@ Table of Contents
 * [Pipeline control webservice](#pipeline-control-webservice)
 * [Pipeline details](#pipeline-details)
 * [Setup on NVIDIA DGX A100 systems](#setup-on-nvidia-dgx-a100-systems)
+* [Setup using singularity](#setup-using-singularity)
 * [Benchmark](#benchmark)
 ## What is ConsensuSV?
 
@@ -150,6 +151,22 @@ After that, you can start using the software, e.g. run:
 ```
 ./test_run_csv.sh
 ```
+
+## Setup using singularity
+
+To prepare singularity image use the following command:
+
+```bash
+singularity pull docker://mateuszchilinski/consensusv-nf-pipeline:latest
+```
+
+Then to run the container:
+
+```bash
+singularity run --pwd /workspace/ --writable-tmpfs consensusv-nf-pipeline_latest.sif
+```
+
+Then you can simply start using the software as described in [Running the pipeline](#running-the-pipeline).
 
 ## Benchmark
 

@@ -303,7 +303,14 @@ RUN pip install pysam
 RUN curl -s https://get.nextflow.io | bash && \
 mv nextflow /tools/
 
+RUN mkdir /t/
+
+RUN /tools/nextflow
+
 WORKDIR /workspace
 
 RUN cd /workspace/ && \
 git clone https://github.com/SFGLab/ConsensuSV-nf-pipeline.git .
+
+RUN chmod -R 777 /workspace
+RUN chmod -R 777 /tools

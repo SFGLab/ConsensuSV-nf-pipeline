@@ -154,16 +154,16 @@ After that, you can start using the software, e.g. run:
 
 ## Setup using singularity
 
-To prepare singularity image use the following command:
+To prepare singularity image use the following command (bear in mind, that some of the pieces of the software we are using use their own directory as temp file storage, so we need to create writable container - this we will run it in "sandbox" mode):
 
 ```bash
-singularity pull docker://mateuszchilinski/consensusv-nf-pipeline:latest
+singularity build --sandbox DIR_WHERE_CONTAINER_WILL_BE/ docker://mateuszchilinski/consensusv-nf-pipeline
 ```
 
 Then to run the container:
 
 ```bash
-singularity run --pwd /workspace/ --writable-tmpfs consensusv-nf-pipeline_latest.sif
+singularity run --pwd /workspace/ --writable DIR_WHERE_CONTAINER_WILL_BE/
 ```
 
 Then you can simply start using the software as described in [Running the pipeline](#running-the-pipeline).
